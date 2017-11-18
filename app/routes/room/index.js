@@ -3,11 +3,13 @@ const {Router} = require('express')
 const router = Router()
 
 router.get('/:roomname/user/:username', (request, response) => {
-  response.send('Hello World from /room/:roomname/user/:username')
+  const {roomname, username} = request.params
+  response.render('index', {roomname, username})
 })
 
 router.get('/:roomname/status', (request, response) => {
-  response.send('Hello World from /room/:roomname/status')
+  const {roomname} = request.params
+  response.send({roomname})
 })
 
 module.exports = router
