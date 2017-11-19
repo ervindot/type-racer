@@ -7,7 +7,8 @@
     "start": "NODE_ENV=production node app/index.js",
     "start:dev": "DEBUG=typeracer:* nodemon app/index.js",
     "build": "webpack -p",
-    "build:dev": "webpack -wd"
+    "build:dev": "webpack -wd",
+    "lint": "eslint ./ --fix"
   },
   "author": "Tiso Alvarez Puccinelli",
   "license": "ISC",
@@ -24,6 +25,13 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
+    "eslint": "^4.11.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-react": "^7.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "nodemon": "^1.12.1",
     "webpack": "^3.8.1"
   }
