@@ -4,13 +4,15 @@
   "description": "Type Racer like clone",
   "main": "index.js",
   "scripts": {
-    "start": "node app/index.js",
-    "dev": "nodemon app/index.js",
-    "build": "webpack -wd"
+    "start": "NODE_ENV=production node app/index.js",
+    "start:dev": "DEBUG=typeracer nodemon app/index.js",
+    "build": "webpack -p",
+    "build:dev": "webpack -wd"
   },
   "author": "Tiso Alvarez Puccinelli",
   "license": "ISC",
   "dependencies": {
+    "debug": "^3.1.0",
     "express": "^4.16.2",
     "express-handlebars": "^3.0.0",
     "react": "^16.1.1",
