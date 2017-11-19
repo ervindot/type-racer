@@ -1,5 +1,5 @@
 const {Router} = require('express')
-const debug = require('debug')('typeracer')
+const debug = require('debug')('typeracer:endpoints')
 
 const router = Router()
 

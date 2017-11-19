@@ -4,12 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Type Racer</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var roomname = "{{roomname}}"
+      var username = "{{username}}"
+    </script>
   </head>
   <body>
     <noscript>
       <p>You need JavaScript enabled to use this application.</p>
     </noscript>
-    <p>The rom name is "{{roomname}}" and the user is "{{username}}"</p>
     <div id="root">Loading...</div>
     <script src="/bundle.js"></script>
   </body>
