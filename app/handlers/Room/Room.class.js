@@ -1,12 +1,27 @@
+const {getRandomTexts} = require('../RandomText')
+
 class Room {
   constructor (name) {
     this.name = name
     this.users = {}
     this.createdAt = new Date()
+    this.text = ''
+
+    getRandomTexts(20)
+      .then(text => {
+        this.text = text
+      })
   }
 
   get activeUsers () {
     return Object.values(this.users).length
+  }
+
+  get allUsersReady () {
+    const foundNonReadyUser = Object.values(this.users)
+      .find(user => user.ready === false)
+    if (foundNonReadyUser) return false
+    else return true
   }
 
   get activeSince () {

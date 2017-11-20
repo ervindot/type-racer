@@ -49,7 +49,13 @@ function getRandomTexts (quantity = 1) {
   return Promise.all(texts)
     .then(values => values
       .filter(text => text !== '')
-      .join('\n\n'))
+      .join('\n\n')
+      .trim()
+    )
+    .catch(error => {
+      console.error(error)
+      return ''
+    })
 }
 
 module.exports = {

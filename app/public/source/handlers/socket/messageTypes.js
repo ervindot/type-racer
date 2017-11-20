@@ -1,0 +1,5 @@
+export const ERROR = 'error'
+export const JOIN = 'join'
+export const LEAVE = 'leave'
+export const READY = 'ready'
+export const START = 'start'

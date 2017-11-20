@@ -1,21 +1,31 @@
 const socketLog = require('debug')('typeracer:socket')
 const socketIO = require('socket.io')
 
-const {Room, currentRooms} = require('../Room')
 const User = require('../User')
+const {Room, currentRooms} = require('../Room')
+const {
+  CONNECTION,
+  DISCONNECT,
+  ERROR,
+  JOIN,
+  LEAVE,
+  READY,
+  START
+} = require('./messageTypes')
 
 let websocket
 
 function startWebSocket (server) {
   websocket = socketIO(server)
-  websocket.on('connection', handleConnection)
+  websocket.on(CONNECTION, handleConnection)
 }
 
 function handleConnection (socket) {
   socketLog('An user connected')
 
-  socket.on('join', joinRoom)
-  socket.on('disconnect', handleDisconnection)
+  socket.on(JOIN, joinRoom)
+  socket.on(READY, userReady)
+  socket.on(DISCONNECT, removeUser)
 
   function joinRoom (message) {
     const {userName, roomName} = message
@@ -30,7 +40,7 @@ function handleConnection (socket) {
 
     const userExists = room.getUser(userName)
     if (userExists) {
-      socket.emit('join', {error: true, message: 'Username already taken'})
+      socket.emit(ERROR, {message: 'Username already taken'})
       socketLog(`User "${userName}" already exists in room "${roomName}"`)
       return
     }
@@ -41,23 +51,38 @@ function handleConnection (socket) {
     room.addUser(newUser)
     socket.user = newUser
     socket.join(roomName)
-    socket.emit('join', {message: `You joined room ${roomName}`})
-    websocket.to(roomName).emit('user', {action: 'join', user: userName})
+    websocket.to(roomName).emit(JOIN, {user: userName})
     socketLog(`User "${userName}" joined room "${roomName}"`)
   }
 
-  function handleDisconnection () {
+  function userReady (message) {
+    const user = socket.user
+    if (!user) {
+      socket.emit(ERROR, {message: 'You did not join a room.'})
+      return
+    }
+
+    user.ready = true
+    websocket.to(user.room).emit(READY, {user: user.name})
+
+    const room = currentRooms[user.room]
+    if (room.allUsersReady) {
+      websocket.to(user.room).emit(START, {text: room.text})
+    }
+  }
+
+  function removeUser () {
     const userName = socket.user && socket.user.name
     const roomName = socket.user && socket.user.room
     const room = roomName && currentRooms[roomName]
 
     if (room && userName) {
       room.removeUser(userName)
-      socketLog(`User "${userName}" was removed from room "${room.name}"`)
+      socketLog(`User "${userName}" was removed from room "${roomName}"`)
 
       room.activeUsers < 1
-        ? delete currentRooms[room.name]
-        : websocket.to(room.name).emit('user', {action: 'leave', user: userName})
+        ? delete currentRooms[roomName]
+        : websocket.to(roomName).emit(LEAVE, {user: userName})
     }
 
     socketLog('User disconnected')
