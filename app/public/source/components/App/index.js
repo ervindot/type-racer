@@ -3,6 +3,7 @@ import {Socket} from '../../handlers'
 
 import UserList from '../UserList'
 import ReadyButton from '../ReadyButton'
+import TypingGame from '../TypingGame'
 
 const {
   GAME_START, ROOM_INFO, SERVER_ERROR, USER_JOIN, USER_LEAVE, USER_READY
@@ -53,7 +54,7 @@ export default class App extends Component {
         </div>
         <div className='row'>
           <div className='twelve columns'>
-            <div>{text}</div>
+            <TypingGame playing={playing} texts={text}/>
           </div>
         </div>
       </div>
