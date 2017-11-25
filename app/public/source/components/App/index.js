@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import {Socket} from '../../handlers'
 
 import UserList from '../UserList'
+import ReadyButton from '../ReadyButton'
 
 const {
   GAME_START, ROOM_INFO, SERVER_ERROR, USER_JOIN, USER_LEAVE, USER_READY
@@ -46,10 +47,8 @@ export default class App extends Component {
             <UserList users={users} playing={playing}/>
           </div>
           <div className='six columns'>
-            { !ready && <button
-              className='button button-primary'
-              onClick={() => this.handleClickReady()}>I am ready!</button>
-            }
+            <ReadyButton ready={ready}
+              onClick={() => this.handleClickReady()} />
           </div>
         </div>
         <div className='row'>
