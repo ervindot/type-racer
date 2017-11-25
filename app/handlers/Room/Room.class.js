@@ -1,9 +1,13 @@
+const moment = require('moment')
+
 class Room {
   constructor (name) {
     this.name = name
     this.users = {}
-    this.createdAt = new Date()
-    this.gameStarted = false
+    this.createdAt = moment()
+    this.playing = false
+    this.gameStart = undefined
+    this.gameEnd = undefined
   }
 
   get activeUsers () {
@@ -11,17 +15,26 @@ class Room {
   }
 
   get allUsersReady () {
-    const foundNonReadyUser = Object.values(this.users)
-      .find(user => user.ready === false)
+    const allUsers = Object.values(this.users)
+    if (allUsers.length < 1) return false
+
+    const foundNonReadyUser = allUsers.find(user => user.ready === false)
     if (foundNonReadyUser) return false
     else return true
   }
 
   get activeSince () {
-    const now = new Date()
-    const difference = (now.getTime() - this.createdAt.getTime())
-    const secondsActive = Math.floor(difference / 1000)
-    return secondsActive
+    const now = moment()
+    return now.diff(this.createdAt, 'seconds')
+  }
+
+  get counter () {
+    if (!this.gameEnd) return 0
+
+    const now = moment()
+    if (now.isAfter(this.gameEnd)) return 0
+
+    return this.gameEnd.diff(now, 'seconds')
   }
 
   getUser (userName) {
@@ -34,6 +47,15 @@ class Room {
 
   removeUser (userName) {
     delete this.users[userName]
+  }
+
+  startGame (text) {
+    this.text = text
+    this.playing = true
+
+    const now = moment()
+    this.gameStart = now
+    this.gameEnd = now.add(3, 'minutes')
   }
 }
 

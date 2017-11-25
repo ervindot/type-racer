@@ -35,7 +35,7 @@ function handleConnection (socket) {
       room = currentRooms[roomName]
     }
 
-    if (room.gameStarted) {
+    if (room.playing) {
       socketLog(`Game already started in room "${roomName}", user ${userName} can't join.`)
       socket.emit(SERVER_ERROR, {message: 'Game already started.'})
       return
@@ -77,9 +77,8 @@ function handleConnection (socket) {
     if (room.activeUsers > 1 && room.allUsersReady) {
       getRandomTexts()
         .then(text => {
-          room.text = text
-          room.gameStarted = true
-          websocket.to(user.room).emit(GAME_START, {text})
+          room.startGame(text)
+          websocket.to(user.room).emit(GAME_START, {text, end: room.gameEnd})
         })
         .catch(error => {
           console.error(error)

@@ -29,7 +29,7 @@ router.get('/:roomname/status', (request, response) => {
     'active_users': room.activeUsers,
     'keystrokes': 0,
     'active_since': room.activeSince,
-    'counter': 0,
+    'counter': room.counter,
     'below_mean': 0,
     'ranking': [],
     'last_minute_lead': ''
