@@ -1,4 +1,4 @@
-export const ERROR = 'error'
+export const ERROR = 'server_error'
 export const JOIN = 'join'
 export const LEAVE = 'leave'
 export const READY = 'ready'
