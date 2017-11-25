@@ -3,6 +3,7 @@ class Room {
     this.name = name
     this.users = {}
     this.createdAt = new Date()
+    this.gameStarted = false
   }
 
   get activeUsers () {
