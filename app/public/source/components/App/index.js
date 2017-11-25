@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import {Socket} from '../../handlers'
 
+import UserList from '../UserList'
+
 const {
   GAME_START, ROOM_INFO, SERVER_ERROR, USER_JOIN, USER_LEAVE, USER_READY
 } = Socket.MESSAGE_TYPES
@@ -35,32 +37,28 @@ export default class App extends Component {
   }
 
   render () {
+    const {users, playing, ready, text} = this.state
     return (
       <div className='container'>
         <h1>Typeracer Like</h1>
         <div className='row'>
           <div className='four columns'>
-            { this.renderUsers() }
+            <UserList users={users} playing={playing}/>
           </div>
-          <div className='eight columns'>
-            { this.renderText() }
+          <div className='six columns'>
+            { !ready && <button
+              className='button button-primary'
+              onClick={() => this.handleClickReady()}>I am ready!</button>
+            }
           </div>
         </div>
-        <button
-          className='button button-primary'
-          onClick={() => this.handleClickReady()}>I am ready!</button>
+        <div className='row'>
+          <div className='twelve columns'>
+            <div>{text}</div>
+          </div>
+        </div>
       </div>
     )
-  }
-
-  renderUsers () {
-    const {users} = this.state
-    return users.map(user => <p key={user.id}>{user.name}</p>)
-  }
-
-  renderText () {
-    const {text} = this.state
-    return <div>{text}</div>
   }
 
   handleClickReady () {
@@ -101,6 +99,7 @@ export default class App extends Component {
     user.ready = true
 
     if (readyUser.name === userName) this.setState({ready: true})
+    else this.forceUpdate()
   }
 
   handleSocketRoomInfo (message) {
