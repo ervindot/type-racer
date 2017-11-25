@@ -3,8 +3,11 @@ const socketIO = require('socket.io')
 
 const User = require('../User')
 const {Room, currentRooms} = require('../Room')
+const {getRandomTexts} = require('../RandomText')
+
 const {
-  CONNECTION, DISCONNECT, ERROR, JOIN, LEAVE, READY, START
+  CONNECTION, DISCONNECT, GAME_START, ROOM_INFO, SERVER_ERROR, USER_JOIN,
+  USER_LEAVE, USER_READY
 } = require('./messageTypes')
 
 let websocket
@@ -17,8 +20,8 @@ function startWebSocket (server) {
 function handleConnection (socket) {
   socketLog('An user connected')
 
-  socket.on(JOIN, joinRoom)
-  socket.on(READY, userReady)
+  socket.on(USER_JOIN, joinRoom)
+  socket.on(USER_READY, userReady)
   socket.on(DISCONNECT, removeUser)
 
   function joinRoom (message) {
@@ -34,36 +37,49 @@ function handleConnection (socket) {
 
     const userExists = room.getUser(userName)
     if (userExists) {
-      socket.emit(ERROR, {message: 'Username already taken'})
       socketLog(`User "${userName}" already exists in room "${roomName}"`)
+      socket.emit(SERVER_ERROR, {message: 'Username already taken'})
       return
     }
 
     socketLog(`Creating user "${userName}"`)
-
     const newUser = new User({name: userName, id: socket.id, room: roomName})
+
+    socketLog(`Sending room information to "${userName}"`)
+    socket.emit(ROOM_INFO, room)
+
+    socketLog(`Joining user "${userName}" to room "${roomName}"`)
     room.addUser(newUser)
     socket.user = newUser
     socket.join(roomName)
-    socketLog(`User "${userName}" joined room "${roomName}"`)
 
-    socketLog(`Emitting "${JOIN}" to room "${roomName}"`)
-    websocket.to(roomName).emit(JOIN, {user: newUser})
+    socketLog(`Emitting "${USER_JOIN}" to room "${roomName}"`)
+    websocket.to(roomName).emit(USER_JOIN, {user: newUser})
   }
 
   function userReady (message) {
     const user = socket.user
     if (!user) {
-      socket.emit(ERROR, {message: 'You did not join a room.'})
+      socket.emit(SERVER_ERROR, {message: 'You did not join a room.'})
       return
     }
 
     user.ready = true
-    websocket.to(user.room).emit(READY, {user})
+    websocket.to(user.room).emit(USER_READY, {user})
 
     const room = currentRooms[user.room]
-    if (room.allUsersReady) {
-      websocket.to(user.room).emit(START, {text: room.text})
+    if (room.activeUsers > 1 && room.allUsersReady) {
+      getRandomTexts()
+        .then(text => {
+          room.text = text
+          websocket.to(user.room).emit(GAME_START, {text})
+        })
+        .catch(error => {
+          console.error(error)
+          websocket.to(user.room).emit(SERVER_ERROR, {
+            message: 'Error generating random text.'
+          })
+        })
     }
   }
 
@@ -79,7 +95,7 @@ function handleConnection (socket) {
 
       room.activeUsers < 1
         ? delete currentRooms[roomName]
-        : websocket.to(roomName).emit(LEAVE, {user})
+        : websocket.to(roomName).emit(USER_LEAVE, {user})
     }
 
     socketLog('User disconnected')

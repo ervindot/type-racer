@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import {Socket} from '../../handlers'
-const {ERROR, JOIN, LEAVE, READY, START} = Socket.MESSAGE_TYPES
+
+const {
+  GAME_START, ROOM_INFO, SERVER_ERROR, USER_JOIN, USER_LEAVE, USER_READY
+} = Socket.MESSAGE_TYPES
 
 export default class App extends Component {
   constructor (props) {
@@ -19,15 +22,16 @@ export default class App extends Component {
   componentDidMount () {
     const {socket, roomName, userName} = this.state
 
-    socket.on(JOIN, this.handleSocketJoin.bind(this))
-    socket.on(LEAVE, this.handleSocketLeave.bind(this))
-    socket.on(READY, this.handleSocketReady.bind(this))
-    socket.on(START, this.handleSocketStart.bind(this))
-    socket.on(ERROR, this.handleSocketError.bind(this))
+    socket.on(USER_JOIN, this.handleSocketJoin.bind(this))
+    socket.on(USER_LEAVE, this.handleSocketLeave.bind(this))
+    socket.on(USER_READY, this.handleSocketReady.bind(this))
+    socket.on(ROOM_INFO, this.handleSocketRoomInfo.bind(this))
+    socket.on(GAME_START, this.handleSocketStart.bind(this))
+    socket.on(SERVER_ERROR, this.handleSocketError.bind(this))
 
     const joinData = {roomName, userName}
     console.log('Sending join data:', joinData)
-    socket.emit(JOIN, joinData)
+    socket.emit(USER_JOIN, joinData)
   }
 
   render () {
@@ -60,9 +64,9 @@ export default class App extends Component {
   }
 
   handleClickReady () {
-    console.log(`Emitting ${READY} to server`)
+    console.log(`Emitting ${USER_READY} to server`)
     const {socket} = this.state
-    socket.emit(READY)
+    socket.emit(USER_READY)
   }
 
   handleSocketJoin (message) {
@@ -79,7 +83,7 @@ export default class App extends Component {
 
   handleSocketLeave (message) {
     const leavedUser = message.user
-    console.log(`User ${message.user} leaved.`)
+    console.log(`User ${leavedUser.name} leaved.`)
 
     const {users} = this.state
     const updatedUsers = users.filter(user => user.id !== leavedUser.id)
@@ -99,8 +103,19 @@ export default class App extends Component {
     if (readyUser.name === userName) this.setState({ready: true})
   }
 
+  handleSocketRoomInfo (message) {
+    console.log('Room information:', message)
+    const roomUsers = Object.values(message.users)
+    this.setState({
+      users: [
+        ...this.state.users,
+        ...roomUsers
+      ]
+    })
+  }
+
   handleSocketStart (message) {
-    console.log('Game started')
+    console.log('Game started:', message)
     const {text} = message
     this.setState({text, playing: true})
   }

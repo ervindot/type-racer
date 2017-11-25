@@ -21,7 +21,7 @@ router.get('/:roomname/status', (request, response) => {
 
   const room = currentRooms[roomname]
   if (!room) {
-    response.status(404).send({error: true, message: 'Room does not exist'})
+    response.status(404).send({message: 'Room does not exist'})
     return
   }
 

@@ -40,18 +40,14 @@ function getRandomText () {
     })
 }
 
-function getRandomTexts (quantity = 1) {
+function getRandomTexts (quantity = 20) {
   const texts = []
   while (quantity > 0) {
     texts.push(getRandomText())
     quantity--
   }
   return Promise.all(texts)
-    .then(values => values
-      .filter(text => text !== '')
-      .join('\n\n')
-      .trim()
-    )
+    .then(values => values.filter(text => text !== ''))
     .catch(error => {
       console.error(error)
       return ''

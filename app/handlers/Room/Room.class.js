@@ -1,16 +1,8 @@
-const {getRandomTexts} = require('../RandomText')
-
 class Room {
   constructor (name) {
     this.name = name
     this.users = {}
     this.createdAt = new Date()
-    this.text = ''
-
-    getRandomTexts(20)
-      .then(text => {
-        this.text = text
-      })
   }
 
   get activeUsers () {
