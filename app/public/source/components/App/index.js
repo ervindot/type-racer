@@ -3,6 +3,7 @@ import {Socket} from '../../handlers'
 
 import UserList from '../UserList'
 import ReadyButton from '../ReadyButton'
+import Timer from '../Timer'
 import TypingGame from '../TypingGame'
 
 const {
@@ -18,6 +19,7 @@ export default class App extends Component {
       userName: window.username,
       ready: false,
       playing: false,
+      gameEnd: undefined,
       users: [],
       text: ''
     }
@@ -39,7 +41,7 @@ export default class App extends Component {
   }
 
   render () {
-    const {users, playing, ready, text} = this.state
+    const {users, playing, ready, text, gameEnd} = this.state
     return (
       <div className='container'>
         <h1>Typeracer Like</h1>
@@ -50,6 +52,7 @@ export default class App extends Component {
           <div className='six columns'>
             <ReadyButton ready={ready}
               onClick={() => this.handleClickReady()} />
+            <Timer end={gameEnd}/>
           </div>
         </div>
         <div className='row'>
@@ -115,8 +118,9 @@ export default class App extends Component {
 
   handleSocketStart (message) {
     console.log('Game started:', message)
-    const {text} = message
-    this.setState({text, playing: true})
+    const {text, end} = message
+    const gameEnd = end
+    this.setState({text, gameEnd, playing: true})
   }
 
   handleSocketError (error) {
