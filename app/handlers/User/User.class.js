@@ -4,6 +4,7 @@ class User {
     this.id = id
     this.room = room
     this.ready = false
+    this.kpm = 0
   }
 }
 
