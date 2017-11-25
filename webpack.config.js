@@ -1,4 +1,5 @@
 const path = require('path')
+const productionEnvironment = (process.env.NODE_ENV === 'production')
 
 const config = {
   entry: path.resolve(__dirname, './app/public/source/index.js'),
@@ -14,7 +15,8 @@ const config = {
         exclude: /node_modules/
       }
     ]
-  }
+  },
+  devtool: productionEnvironment ? undefined : 'inline-source-map '
 }
 
 module.exports = config

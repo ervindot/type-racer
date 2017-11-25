@@ -6,8 +6,8 @@
   "scripts": {
     "start": "NODE_ENV=production node app/index.js",
     "start:dev": "DEBUG=typeracer:* nodemon app/index.js",
-    "build": "webpack -p",
-    "build:dev": "webpack -wd",
+    "build": "NODE_ENV=production webpack -p",
+    "build:dev": "webpack -w",
     "lint": "eslint ./ --fix"
   },
   "author": "Tiso Alvarez Puccinelli",
