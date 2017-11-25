@@ -4,13 +4,7 @@ const socketIO = require('socket.io')
 const User = require('../User')
 const {Room, currentRooms} = require('../Room')
 const {
-  CONNECTION,
-  DISCONNECT,
-  ERROR,
-  JOIN,
-  LEAVE,
-  READY,
-  START
+  CONNECTION, DISCONNECT, ERROR, JOIN, LEAVE, READY, START
 } = require('./messageTypes')
 
 let websocket
@@ -51,8 +45,10 @@ function handleConnection (socket) {
     room.addUser(newUser)
     socket.user = newUser
     socket.join(roomName)
-    websocket.to(roomName).emit(JOIN, {user: userName})
     socketLog(`User "${userName}" joined room "${roomName}"`)
+
+    socketLog(`Emitting "${JOIN}" to room "${roomName}"`)
+    websocket.to(roomName).emit(JOIN, {user: newUser})
   }
 
   function userReady (message) {
@@ -63,7 +59,7 @@ function handleConnection (socket) {
     }
 
     user.ready = true
-    websocket.to(user.room).emit(READY, {user: user.name})
+    websocket.to(user.room).emit(READY, {user})
 
     const room = currentRooms[user.room]
     if (room.allUsersReady) {
@@ -72,8 +68,9 @@ function handleConnection (socket) {
   }
 
   function removeUser () {
-    const userName = socket.user && socket.user.name
-    const roomName = socket.user && socket.user.room
+    const user = socket.user
+    const userName = user && user.name
+    const roomName = user && user.room
     const room = roomName && currentRooms[roomName]
 
     if (room && userName) {
@@ -82,7 +79,7 @@ function handleConnection (socket) {
 
       room.activeUsers < 1
         ? delete currentRooms[roomName]
-        : websocket.to(roomName).emit(LEAVE, {user: userName})
+        : websocket.to(roomName).emit(LEAVE, {user})
     }
 
     socketLog('User disconnected')
