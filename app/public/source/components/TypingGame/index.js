@@ -5,21 +5,53 @@ export default class TypingGame extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      currentText: 0
+      textNumber: 0,
+      lastWord: '',
+      typed: ''
     }
   }
 
-  render () {
-    const {texts, playing} = this.props
-    if (!playing) return null
+  get currentText () {
+    const {texts} = this.props
+    const {textNumber} = this.state
+    return texts[textNumber]
+  }
 
-    const {currentText} = this.state
-    const text = texts[currentText]
+  render () {
+    const {playing} = this.props
+    if (!playing) return null
     return (
       <div>
-        <div>{text}</div>
-        <input type="text" />
+        <div>{this.currentText}</div>
+        <input onKeyPress={event => this.handleInput(event)} type="text" />
       </div>
     )
+  }
+
+  handleInput (event) {
+    event.preventDefault()
+    const {target, which, keyCode, ctrlKey} = event
+    if (ctrlKey) return
+
+    const charCode = which || keyCode
+    const newKey = String.fromCharCode(charCode)
+
+    const {typed, lastWord} = this.state
+    const typedText = typed + newKey
+    if (this.currentText.startsWith(typedText)) {
+      const newState = {typed: typedText}
+      if (newKey === ' ') {
+        target.value = ''
+        newState.lastWord = ''
+      } else {
+        const newWord = lastWord + newKey
+        target.value = newWord
+        newState.lastWord = newWord
+      }
+      this.setState(newState)
+    } else {
+      // TODO: display error to user
+      console.log('incorrect')
+    }
   }
 }
