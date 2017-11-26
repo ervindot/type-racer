@@ -55,19 +55,21 @@ export default class App extends Component {
     const {users, playing, ready, text, gameEnd} = this.state
     return (
       <div className='container'>
-        <h1>Typeracer Like</h1>
         <div className='row'>
-          <div className='four columns'>
-            <UserList users={users} playing={playing}/>
+          <div className='eight columns'>
+            <h1>Typeracer Like</h1>
           </div>
-          <div className='six columns'>
-            <ReadyButton ready={ready}
-              onClick={() => this.handleClickReady()} />
+          <div className='four columns'>
             <Timer end={gameEnd}/>
           </div>
         </div>
         <div className='row'>
-          <div className='twelve columns'>
+          <div className='three columns'>
+            <UserList users={users} playing={playing}/>
+          </div>
+          <div className='nine columns'>
+            <ReadyButton ready={ready}
+              onClick={() => this.handleClickReady()} />
             <TypingGame
               onKeystroke={() => this.handleKeystroke()}
               playing={playing}

@@ -14,7 +14,18 @@ const UserList = ({users, playing}) => {
 
   function renderUserInfo (user) {
     if (user.ready && !playing) return <strong>READY!</strong>
-    if (playing) return <strong>KP/m: {user.currentKPM} (current) {user.bestKPM} (best)</strong>
+
+    if (playing) {
+      return (
+        <div>
+          <strong>KP/m:</strong>
+          <br/>
+          {user.currentKPM} (current)
+          <br/>
+          {user.bestKPM} (best)
+        </div>
+      )
+    }
   }
 }
 
