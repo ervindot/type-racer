@@ -63,6 +63,17 @@ class Room {
       .sort((a, b) => b.score - a.score)
   }
 
+  get lastMinuteLead () {
+    const users = Object.values(this.users)
+      .map(user => ({
+        name: user.name,
+        score: user.currentKPM
+      }))
+      .sort((a, b) => b.score - a.score)
+    const lead = users[0]
+    return lead.name
+  }
+
   getUser (userName) {
     return this.users[userName]
   }
