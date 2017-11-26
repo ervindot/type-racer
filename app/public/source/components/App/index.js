@@ -27,7 +27,8 @@ export default class App extends Component {
       users: [],
       text: '',
       keystrokes: 0,
-      interval: undefined
+      interval: undefined,
+      error: false
     }
   }
 
@@ -53,7 +54,9 @@ export default class App extends Component {
   }
 
   render () {
-    const {users, playing, ready, text, gameEnd, gameEnded} = this.state
+    const {users, playing, ready, text, gameEnd, gameEnded, error} = this.state
+    if (error) return <p>{error}</p>
+
     return (
       <div className='container'>
         <div className='row'>
@@ -170,7 +173,10 @@ export default class App extends Component {
   }
 
   handleSocketError (error) {
-    // TODO: Display error message to user
     console.error('Server error:', error.message)
+    const {interval, socket} = this.state
+    clearInterval(interval)
+    socket.disconnect()
+    this.setState({error: error.message})
   }
 }
