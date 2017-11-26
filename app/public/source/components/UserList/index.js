@@ -1,6 +1,6 @@
 import React from 'react'
 
-const UserList = ({users, playing}) => {
+const UserList = ({users, playing, gameEnded}) => {
   return users.map(user => renderUser(user))
 
   function renderUser (user) {
@@ -13,9 +13,9 @@ const UserList = ({users, playing}) => {
   }
 
   function renderUserInfo (user) {
-    if (user.ready && !playing) return <strong>READY!</strong>
+    if (user.ready && !playing && !gameEnded) return <strong>READY!</strong>
 
-    if (playing) {
+    if (playing || gameEnded) {
       return (
         <div>
           <strong>KP/m:</strong>

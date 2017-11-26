@@ -22,6 +22,7 @@ export default class App extends Component {
       userName: window.username,
       ready: false,
       playing: false,
+      gameEnded: false,
       gameEnd: undefined,
       users: [],
       text: '',
@@ -52,7 +53,7 @@ export default class App extends Component {
   }
 
   render () {
-    const {users, playing, ready, text, gameEnd} = this.state
+    const {users, playing, ready, text, gameEnd, gameEnded} = this.state
     return (
       <div className='container'>
         <div className='row'>
@@ -65,7 +66,7 @@ export default class App extends Component {
         </div>
         <div className='row'>
           <div className='three columns'>
-            <UserList users={users} playing={playing}/>
+            <UserList users={users} playing={playing} gameEnded={gameEnded}/>
           </div>
           <div className='nine columns'>
             <ReadyButton ready={ready}
@@ -73,6 +74,7 @@ export default class App extends Component {
             <TypingGame
               onKeystroke={() => this.handleKeystroke()}
               playing={playing}
+              gameEnded={gameEnded}
               texts={text}/>
           </div>
         </div>
@@ -159,9 +161,12 @@ export default class App extends Component {
     this.setState({users})
   }
 
-  handleSocketEnd (message) {
-    console.log('Game ended:', message)
-    clearInterval(this.state.interval)
+  handleSocketEnd (users) {
+    console.log('Game ended:', users)
+    const {interval, socket} = this.state
+    clearInterval(interval)
+    socket.disconnect()
+    this.setState({users, playing: false, gameEnded: true})
   }
 
   handleSocketError (error) {

@@ -19,7 +19,9 @@ export default class TypingGame extends Component {
   }
 
   render () {
-    const {playing} = this.props
+    const {playing, gameEnded} = this.props
+
+    if (gameEnded) return <p>Game ended!</p>
     if (!playing) return null
 
     const currentText = this.currentText

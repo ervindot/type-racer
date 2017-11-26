@@ -40,6 +40,6 @@ export default class Timer extends Component {
   render () {
     const {timerText} = this.state
     if (!timerText) return null
-    return <div>{timerText}</div>
+    return <h2>{timerText}</h2>
   }
 }
