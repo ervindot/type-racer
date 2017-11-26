@@ -31,7 +31,7 @@ router.get('/:roomname/status', (request, response) => {
     'active_since': room.activeSince,
     'counter': room.counter,
     'below_mean': 0,
-    'ranking': [],
+    'ranking': room.ranking,
     'last_minute_lead': ''
   })
 })

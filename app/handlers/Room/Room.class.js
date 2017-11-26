@@ -54,6 +54,15 @@ class Room {
     }, 0)
   }
 
+  get ranking () {
+    return Object.values(this.users)
+      .map(user => ({
+        name: user.name,
+        score: user.bestKPM
+      }))
+      .sort((a, b) => b.score - a.score)
+  }
+
   getUser (userName) {
     return this.users[userName]
   }
