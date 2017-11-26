@@ -12,6 +12,7 @@ class User {
   }
 
   get currentKPM () {
+    if (!this.startedPlaying) return 0
     const now = moment()
     const minute = this.startedPlaying.diff(now, 'minutes')
     const currentKPM = this.KPM[minute] || 0
