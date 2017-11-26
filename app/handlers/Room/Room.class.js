@@ -55,7 +55,7 @@ class Room {
 
     const now = moment()
     this.gameStart = now
-    this.gameEnd = now.add(3, 'minutes')
+    this.gameEnd = now.add(3, 'minutes').add(1, 'second')
   }
 }
 

@@ -16,25 +16,25 @@ export default class Timer extends Component {
     const {end} = nextProps
     if (!end || end === this.props.end) return
 
+    clearInterval(this.state.interval)
     const timerEnd = moment(end)
 
-    clearInterval(this.state.interval)
-    this.setState({
-      interval: setInterval(updateTimer.bind(this), ONE_SECOND)
-    })
-
     function updateTimer () {
-      const now = moment()
-
-      if (now.isAfter(timerEnd)) {
-        clearInterval(this.state.interval)
-        this.setState({timerText: '00:00'})
-        return
-      }
-
-      const timerText = moment(timerEnd.diff(now)).format('mm:ss')
+      const timerText = createTimerText()
+      if (timerText === '00:00') clearInterval(this.state.interval)
       this.setState({timerText})
     }
+
+    function createTimerText () {
+      const now = moment()
+      if (now.isAfter(timerEnd)) return '00:00'
+      return moment(timerEnd.diff(now)).format('mm:ss')
+    }
+
+    this.setState({
+      interval: setInterval(updateTimer.bind(this), ONE_SECOND),
+      timerText: createTimerText()
+    })
   }
 
   render () {
