@@ -7,7 +7,8 @@ export default class TypingGame extends Component {
     this.state = {
       textNumber: 0,
       lastWord: '',
-      typed: ''
+      typed: '',
+      typeError: false
     }
   }
 
@@ -20,38 +21,84 @@ export default class TypingGame extends Component {
   render () {
     const {playing} = this.props
     if (!playing) return null
+
+    const currentText = this.currentText
+    if (!currentText) {
+      return <p>You finished all texts! Wait for the others to finish.</p>
+    }
+
+    const {typeError, typed} = this.state
+    const notTyped = currentText.replace(typed, '')
+
     return (
       <div>
-        <div>{this.currentText}</div>
-        <input onKeyPress={event => this.handleInput(event)} type="text" />
+        <div>
+          <span style={{backgroundColor: '#A5D6A7'}}>{typed}</span>{notTyped}
+        </div>
+        <input
+          type='text'
+          style={{border: (typeError) ? 'solid 1px red' : ''}}
+          onKeyPress={event => this.handleKeyPress(event)}
+          onKeyDown={event => this.handleKeyDown(event)}/>
       </div>
     )
   }
 
-  handleInput (event) {
+  handleKeyPress (event) {
     event.preventDefault()
-    const {target, which, keyCode, ctrlKey} = event
-    if (ctrlKey) return
 
-    const charCode = which || keyCode
-    const newKey = String.fromCharCode(charCode)
+    const currentText = this.currentText
 
-    const {typed, lastWord} = this.state
-    const typedText = typed + newKey
-    if (this.currentText.startsWith(typedText)) {
-      const newState = {typed: typedText}
-      if (newKey === ' ') {
-        target.value = ''
-        newState.lastWord = ''
-      } else {
-        const newWord = lastWord + newKey
-        target.value = newWord
-        newState.lastWord = newWord
-      }
-      this.setState(newState)
+    const noTextToType = (!currentText)
+    if (noTextToType) return
+
+    const {target, which, keyCode, charCode, ctrlKey} = event
+    const pressingControlKey = ctrlKey
+    if (pressingControlKey) return
+
+    const characterCode = which || keyCode || charCode
+    const pressedKey = String.fromCharCode(characterCode)
+
+    const {typed, lastWord, textNumber} = this.state
+    const lastTyped = typed + pressedKey
+
+    const typedTextIsCorrect = (currentText.startsWith(lastTyped))
+    if (!typedTextIsCorrect) {
+      target.value = lastWord
+      this.setState({typeError: true})
+      return
+    }
+
+    const newState = {typeError: false}
+    const typedCompleteText = (currentText === lastTyped)
+    const pressedSpaceBar = (pressedKey === ' ')
+
+    if (typedCompleteText) {
+      target.value = ''
+      newState.textNumber = textNumber + 1
+      newState.lastWord = ''
+      newState.typed = ''
+    } else if (pressedSpaceBar) {
+      target.value = ''
+      newState.lastWord = ''
+      newState.typed = lastTyped
     } else {
-      // TODO: display error to user
-      console.log('incorrect')
+      const newWord = lastWord + pressedKey
+      target.value = newWord
+      newState.lastWord = newWord
+      newState.typed = lastTyped
+    }
+
+    this.setState(newState)
+  }
+
+  handleKeyDown (event) {
+    const {which, keyCode, charCode} = event
+    const key = keyCode || which || charCode
+    const backspace = (key === 8)
+    const deleteKey = (key === 46)
+    if (backspace || deleteKey) {
+      event.preventDefault()
     }
   }
 }
