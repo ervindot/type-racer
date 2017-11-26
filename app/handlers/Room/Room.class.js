@@ -74,6 +74,21 @@ class Room {
     return lead.name
   }
 
+  get belowMean () {
+    const users = Object.values(this.users)
+    const total = users.reduce((total, user) => {
+      total = total + user.bestKPM
+      return total
+    }, 0)
+
+    const mean = (total / users.length)
+
+    return users.reduce((bellowMean, user) => {
+      if (user.bestKPM < mean) bellowMean = bellowMean + 1
+      return bellowMean
+    }, 0)
+  }
+
   getUser (userName) {
     return this.users[userName]
   }
