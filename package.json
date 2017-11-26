@@ -4,7 +4,7 @@
   "description": "Type Racer like clone",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=production node app/index.js",
+    "start": "npm run build -s && NODE_ENV=production node app/index.js",
     "start:dev": "DEBUG=typeracer:* nodemon app/index.js",
     "build": "NODE_ENV=production webpack -p",
     "build:dev": "webpack -w",
