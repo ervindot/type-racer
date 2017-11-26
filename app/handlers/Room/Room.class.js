@@ -49,7 +49,7 @@ class Room {
 
   get keystrokes () {
     return Object.values(this.users).reduce((keystrokes, user) => {
-      keystrokes = keystrokes + user.keystrokes
+      keystrokes = keystrokes + user.currentKPM
       return keystrokes
     }, 0)
   }
