@@ -8,7 +8,8 @@ const SOCKET_MESSAGE_TYPES = {
   USER_JOIN: 'join',
   USER_LEAVE: 'leave',
   USER_READY: 'ready',
-  KEYSTROKE: 'keystroke'
+  KEYSTROKE: 'keystroke',
+  UPDATE: 'update'
 }
 
 module.exports = SOCKET_MESSAGE_TYPES

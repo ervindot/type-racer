@@ -8,7 +8,7 @@ import TypingGame from '../TypingGame'
 
 const {
   GAME_START, ROOM_INFO, SERVER_ERROR, USER_JOIN, USER_LEAVE, USER_READY,
-  KEYSTROKE, GAME_END
+  KEYSTROKE, GAME_END, UPDATE
 } = Socket.MESSAGE_TYPES
 
 const TWO_SECONDS = 2000
@@ -40,6 +40,7 @@ export default class App extends Component {
     socket.on(GAME_START, this.handleSocketStart.bind(this))
     socket.on(GAME_END, this.handleSocketEnd.bind(this))
     socket.on(SERVER_ERROR, this.handleSocketError.bind(this))
+    socket.on(UPDATE, this.handleSocketUpdate.bind(this))
 
     const joinData = {roomName, userName}
     console.log('Sending join data:', joinData)
@@ -150,6 +151,10 @@ export default class App extends Component {
     const gameEnd = end
     const interval = setInterval(this.sendKeystrokes.bind(this), TWO_SECONDS)
     this.setState({text, gameEnd, interval, playing: true})
+  }
+
+  handleSocketUpdate (users) {
+    this.setState({users})
   }
 
   handleSocketEnd (message) {

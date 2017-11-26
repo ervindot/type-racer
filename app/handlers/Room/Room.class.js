@@ -39,6 +39,14 @@ class Room {
     return this.gameEnd.diff(now, 'seconds')
   }
 
+  get usersKPM () {
+    return Object.values(this.users).map(user => ({
+      ...user,
+      currentKPM: user.currentKPM,
+      bestKPM: user.bestKPM
+    }))
+  }
+
   getUser (userName) {
     return this.users[userName]
   }
@@ -58,6 +66,8 @@ class Room {
     const now = moment()
     this.gameStart = now
     this.gameEnd = now.add(this.gameDuration)
+
+    Object.values(this.users).forEach(user => { user.startedPlaying = now })
   }
 }
 

@@ -7,7 +7,7 @@ const {getRandomTexts} = require('../RandomText')
 
 const {
   CONNECTION, DISCONNECT, GAME_START, ROOM_INFO, SERVER_ERROR, USER_JOIN,
-  USER_LEAVE, USER_READY, KEYSTROKE, GAME_END
+  USER_LEAVE, USER_READY, KEYSTROKE, GAME_END, UPDATE
 } = require('./messageTypes')
 
 let websocket
@@ -106,8 +106,8 @@ function handleConnection (socket) {
       socket.emit(SERVER_ERROR, {message: 'You did not join a room.'})
       return
     }
-    // TODO: save user keystrokes
     socketLog(`Got ${keystrokes} keystrokes from ${user.name}`)
+    user.addToCurrentKPM(keystrokes)
   }
 }
 
@@ -118,8 +118,17 @@ function startGame (room) {
     .then(text => {
       room.startGame(text)
       websocket.to(room.name).emit(GAME_START, {text, end: room.gameEnd})
+
       socketLog(`Game will end at ${room.gameEnd}`)
-      setTimeout(() => endGame(room), room.gameDuration)
+      const TWO_SECONDS = 2000
+      let updateInterval
+
+      setTimeout(() => {
+        clearInterval(updateInterval)
+        endGame(room)
+      }, room.gameDuration)
+
+      updateInterval = setInterval(() => sendGameStatus(room), TWO_SECONDS)
     })
     .catch(error => {
       console.error(error)
@@ -129,10 +138,15 @@ function startGame (room) {
     })
 }
 
+function sendGameStatus (room) {
+  socketLog(`Emitting "${UPDATE}" to room "${room.name}"`)
+  websocket.to(room.name).emit(UPDATE, room.usersKPM)
+}
+
 function endGame (room) {
   socketLog(`Game on room ${room.name} ended`)
   socketLog(`Emitting "${GAME_END}" to room "${room.name}"`)
-  websocket.to(room.name).emit(GAME_END, {})
+  websocket.to(room.name).emit(GAME_END, room.usersKPM)
 }
 
 module.exports = {
