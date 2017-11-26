@@ -18,6 +18,13 @@ class User {
     return currentKPM
   }
 
+  get keystrokes () {
+    return Object.values(this.KPM).reduce((total, kpm) => {
+      total = total + kpm
+      return total
+    }, 0)
+  }
+
   addToCurrentKPM (keystrokes) {
     const now = moment()
     const minute = this.startedPlaying.diff(now, 'minutes')

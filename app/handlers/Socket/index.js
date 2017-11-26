@@ -1,4 +1,5 @@
 const socketLog = require('debug')('typeracer:socket')
+const intervalLog = require('debug')('typeracer:interval')
 const socketIO = require('socket.io')
 
 const User = require('../User')
@@ -139,7 +140,7 @@ function startGame (room) {
 }
 
 function sendGameStatus (room) {
-  socketLog(`Emitting "${UPDATE}" to room "${room.name}"`)
+  intervalLog(`Sending user's KPM to room "${room.name}"`)
   websocket.to(room.name).emit(UPDATE, room.usersKPM)
 }
 

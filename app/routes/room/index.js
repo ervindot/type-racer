@@ -27,7 +27,7 @@ router.get('/:roomname/status', (request, response) => {
 
   response.send({
     'active_users': room.activeUsers,
-    'keystrokes': 0,
+    'keystrokes': room.keystrokes,
     'active_since': room.activeSince,
     'counter': room.counter,
     'below_mean': 0,

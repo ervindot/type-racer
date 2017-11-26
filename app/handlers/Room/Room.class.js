@@ -47,6 +47,13 @@ class Room {
     }))
   }
 
+  get keystrokes () {
+    return Object.values(this.users).reduce((keystrokes, user) => {
+      keystrokes = keystrokes + user.keystrokes
+      return keystrokes
+    }, 0)
+  }
+
   getUser (userName) {
     return this.users[userName]
   }
