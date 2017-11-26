@@ -90,6 +90,9 @@ export default class TypingGame extends Component {
     }
 
     this.setState(newState)
+
+    const {onKeystroke} = this.props
+    onKeystroke(pressedKey)
   }
 
   handleKeyDown (event) {

@@ -7,7 +7,7 @@ const {getRandomTexts} = require('../RandomText')
 
 const {
   CONNECTION, DISCONNECT, GAME_START, ROOM_INFO, SERVER_ERROR, USER_JOIN,
-  USER_LEAVE, USER_READY
+  USER_LEAVE, USER_READY, KEYSTROKE, GAME_END
 } = require('./messageTypes')
 
 let websocket
@@ -23,6 +23,7 @@ function handleConnection (socket) {
   socket.on(USER_JOIN, joinRoom)
   socket.on(USER_READY, userReady)
   socket.on(DISCONNECT, removeUser)
+  socket.on(KEYSTROKE, saveKeystrokes)
 
   function joinRoom (message) {
     const {userName, roomName} = message
@@ -70,23 +71,15 @@ function handleConnection (socket) {
       return
     }
 
+    socketLog(`User ${user.name} is ready`)
     user.ready = true
-    websocket.to(user.room).emit(USER_READY, {user})
 
+    socketLog(`Emitting "${USER_READY}" to room "${user.room}"`)
     const room = currentRooms[user.room]
-    if (room.activeUsers > 1 && room.allUsersReady) {
-      getRandomTexts()
-        .then(text => {
-          room.startGame(text)
-          websocket.to(user.room).emit(GAME_START, {text, end: room.gameEnd})
-        })
-        .catch(error => {
-          console.error(error)
-          websocket.to(user.room).emit(SERVER_ERROR, {
-            message: 'Error generating random text.'
-          })
-        })
-    }
+    websocket.to(room.name).emit(USER_READY, {user})
+
+    const everybodyReady = (room.activeUsers > 1 && room.allUsersReady)
+    if (everybodyReady) startGame(room)
   }
 
   function removeUser () {
@@ -106,6 +99,40 @@ function handleConnection (socket) {
 
     socketLog('User disconnected')
   }
+
+  function saveKeystrokes (keystrokes) {
+    const user = socket.user
+    if (!user) {
+      socket.emit(SERVER_ERROR, {message: 'You did not join a room.'})
+      return
+    }
+    // TODO: save user keystrokes
+    socketLog(`Got ${keystrokes} keystrokes from ${user.name}`)
+  }
+}
+
+function startGame (room) {
+  socketLog(`Starting game on room ${room.name}`)
+
+  getRandomTexts()
+    .then(text => {
+      room.startGame(text)
+      websocket.to(room.name).emit(GAME_START, {text, end: room.gameEnd})
+      socketLog(`Game will end at ${room.gameEnd}`)
+      setTimeout(() => endGame(room), room.gameDuration)
+    })
+    .catch(error => {
+      console.error(error)
+      websocket.to(room.name).emit(SERVER_ERROR, {
+        message: 'Error generating random text.'
+      })
+    })
+}
+
+function endGame (room) {
+  socketLog(`Game on room ${room.name} ended`)
+  socketLog(`Emitting "${GAME_END}" to room "${room.name}"`)
+  websocket.to(room.name).emit(GAME_END, {})
 }
 
 module.exports = {

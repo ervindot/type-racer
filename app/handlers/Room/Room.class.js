@@ -8,6 +8,8 @@ class Room {
     this.playing = false
     this.gameStart = undefined
     this.gameEnd = undefined
+    this.gameDuration = moment.duration({minutes: 3, seconds: 1})
+      .asMilliseconds()
   }
 
   get activeUsers () {
@@ -55,7 +57,7 @@ class Room {
 
     const now = moment()
     this.gameStart = now
-    this.gameEnd = now.add(3, 'minutes').add(1, 'second')
+    this.gameEnd = now.add(this.gameDuration)
   }
 }
 
