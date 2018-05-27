@@ -1,23 +1,27 @@
 {
   "name": "typeracer",
   "version": "1.0.0",
-  "description": "Type Racer like clone",
+  "description": "Type Racer clone",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:tisoap/type-racer.git"
+  },
+  "license": "ISC",
+  "author": "Tiso Alvarez Puccinelli",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build -s && NODE_ENV=production node app/index.js",
-    "start:dev": "DEBUG=typeracer:* nodemon app/index.js",
     "build": "NODE_ENV=production webpack -p",
     "build:dev": "webpack -w",
-    "lint": "eslint ./ --fix"
+    "lint": "eslint ./ --fix",
+    "start": "npm run build -s && NODE_ENV=production node app/index.js",
+    "start:dev": "DEBUG=typeracer:* nodemon app/index.js"
   },
-  "author": "Tiso Alvarez Puccinelli",
-  "license": "ISC",
   "dependencies": {
     "axios": "^0.17.1",
     "debug": "^3.1.0",
     "express": "^4.16.2",
     "express-handlebars": "^3.0.0",
-    "moment": "^2.19.2",
+    "moment": "^2.22.1",
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
     "socket.io": "^2.0.4",
