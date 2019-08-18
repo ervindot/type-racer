@@ -10,14 +10,15 @@
   "author": "Tiso Alvarez Puccinelli",
   "main": "index.js",
   "scripts": {
-    "build": "NODE_ENV=production webpack -p",
+    "build": "cross-env NODE_ENV=production webpack -p",
     "build:dev": "webpack -w",
     "lint": "eslint ./ --fix",
-    "start": "npm run build -s && NODE_ENV=production node app/index.js",
-    "start:dev": "DEBUG=typeracer:* nodemon app/index.js"
+    "start": "npm run build -s && cross-env NODE_ENV=production node app/index.js",
+    "start:dev": "cross-env DEBUG=typeracer:* nodemon app/index.js"
   },
   "dependencies": {
     "axios": "0.17.1",
+    "cross-env": "5.2.0",
     "debug": "3.1.0",
     "express": "4.16.2",
     "express-handlebars": "3.0.0",
