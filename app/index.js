@@ -22,5 +22,7 @@ startWebSocket(server)
 
 const PORT = process.env.PORT || 3000
 server.listen(PORT, () => {
-  console.info(`Server is listening on http://localhost:${PORT}`)
+  console.info(`\nServer is listening on port ${PORT}`)
+  console.info('\nJoin a game by entering http://localhost:3000/room/MYROOM/user/MYUSER')
+  console.info('replacing MYROOM with the room name and MYUSER with your user name.')
 })
